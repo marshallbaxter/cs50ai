@@ -32,12 +32,13 @@ def player(board):
     x_count = 0
     o_count = 0
 
-    for n in board:
-        if n == X:
-            x_count += 1
-            continue
-        if n == O:
-            o_count += 1
+    for row in board:
+        for n in row:
+            if n == X:
+                x_count += 1
+                continue
+            if n == O:
+                o_count += 1
 
     if x_count == o_count:
         return X
@@ -84,57 +85,29 @@ def winner(board):
     # check for three in a row starting from specific to cover all possible winning situations 
     # without checking every square
 
-    # top left
-    move = board[0][0]
-    if move is not EMPTY:
-        # across
-        if board[0][1] and board[0][2] == move:
-            return move
+    # check rows
+    for i in range(3):
+        if board[i][0] == board[i][1] == board[i][2] != EMPTY:
+            return board[i][0]
 
-        # down
-        if board[1][0] and board[2][0] == move:
-            return move
+    # check columns
+    for i in range(3):
+        if board[0][i] == board[1][i] == board[2][i] != EMPTY:
+            return board[0][i]
 
-        # diagional
-        if board[1][1] and board[2][2] == move:
-            return move
-
-    # top right
-    move = board[2][0]
-    if move is not EMPTY:
-        # down
-        if board[2][1] and board[2][2] == move:
-            return move
-        # diagional
-        if board[1][1] and board[0][2] == move:
-            return move
-
-    # bottom left
-    move = board[0][2]
-    if move is not EMPTY:
-        # across
-        if board[1][2] and board[2][2] == move:
-            return move
-
-    # center
-    move = board[1][1]
-    if move is not EMPTY:
-        # across
-        if board[0][1] and board[2][1] == move:
-            return move
-
-        # down
-        if board[1][0] and board[1][2] == move:
-            return move
+    # check diaginals 
+    if board[0][0] == board[1][1] == board[2][2] != EMPTY:
+        return board[1][1]
+    if board[0][2] == board[1][1] == board[2][0] != EMPTY:
+        return board[1][1]
+    
     return None
-
 
 
 def terminal(board):
     """
     Returns True if game is over, False otherwise.
     """
-    # TODO, starting by just check for all spaces filled
 
     # check if there is a winner
     if winner(board) is None:
