@@ -66,6 +66,12 @@ def result(board, action):
 
     # check if action if valid
     i, j = action
+
+    if i < 0 or i > 2:
+        raise RuntimeError('Not valid action')
+    if j < 0 or i > 2:
+        raise RuntimeError('Not valid action')
+
     if board[i][j] == EMPTY:
         # if valid update deep copy of board and return a deep copy
         board_copy = copy.deepcopy(board)
@@ -114,7 +120,7 @@ def terminal(board):
         return False
 
     # check for any available actions
-    if actions(board):
+    if actions(board) is None:
         return False
     
     return True
