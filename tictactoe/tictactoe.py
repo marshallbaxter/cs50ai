@@ -55,7 +55,7 @@ def actions(board):
     for i, row in enumerate(board):
         for j, value in enumerate(row):
             if value is EMPTY:
-              possible_actions.add((i,j))
+                possible_actions.add((i, j))
     return possible_actions
 
 
@@ -69,7 +69,7 @@ def result(board, action):
 
     if i < 0 or i > 2:
         raise RuntimeError('Not valid action')
-    if j < 0 or i > 2:
+    if j < 0 or j > 2:
         raise RuntimeError('Not valid action')
 
     if board[i][j] == EMPTY:
@@ -116,17 +116,14 @@ def terminal(board):
     """
 
     # check if there is a winner
-    if winner(board) is None:
-        return False
-
-    # check for any available actions
-    if actions(board) is None:
-        return False
+    if winner(board) is not None:
+        return True
     
-    return True
-
-
-
+    # check for any available actions
+    if len(actions(board)) == 0:
+        return True
+    
+    return False
 
 def utility(board):
     """
@@ -143,7 +140,6 @@ def utility(board):
     else:
         return 0
 
-
 def minimax(board):
     """
     Returns the optimal action for the current player on the board.
@@ -151,26 +147,44 @@ def minimax(board):
 
     # check if board is terminal
     if terminal(board):
-        return None
-    
-    # get current player (X or O)
-    current_player = player(board)
+        return None 
+    current_player = player(board) 
 
-    # get list of possible actions
-    possible_actions = actions(board)
+    # store best action found
+    best_action = None
 
-    # check if one of the possible actions is a winner
-    for action in possible_actions:
-
-        # create board with action and analize
-        test_board = result(board,action)
-
-        # check if action wins for current player
-        if winner(test_board) is current_player:
-            return action
+    if current_player is X:
+        v = -math.inf
+        for action in actions(board):
+            test_board = result(board, action)
+            test_value = min_value(test_board)
+            if v < test_value:
+                best_action = action
+                v = test_value
         
-        # check if action wins for other player
-        if winner(test_board) is not None:
-            return action
-        
-    return action
+    elif current_player is O:
+        v = math.inf
+        for action in actions(board):
+            test_board = result(board, action)
+            test_value = max_value(test_board)
+            if v > test_value:
+                best_action = action
+                v = test_value
+
+    return best_action
+
+def max_value(board):
+    if terminal(board):
+        return utility(board)
+    v = - math.inf
+    for action in actions(board):
+        v = max(v, min_value(result(board, action)))
+    return v
+
+def min_value(board):
+    if terminal(board):
+        return utility(board)
+    v = math.inf
+    for action in actions(board):
+        v = min(v, max_value(result(board, action)))
+    return v
